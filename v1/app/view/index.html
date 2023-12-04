@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>图书列表</title>
+    <style>
+        body {
+            background-image: url("../img/2.png");
+            background-size: cover;
+            background-repeat: no-repeat;
+        }
+
+        h1, th, td, a, button {
+            color: #fff; /* 将元素的颜色设置为白色 */
+        }
+    </style>
+</head>
+<body>
+<h1>图书列表</h1>
+<a href="/login">登录</a>
+<a href="/tui">退出登录</a>
+<table>
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Cover</th>
+        <th>Title</th>
+        <th>Price</th>
+        <th>Actions</th>
+    </tr>
+    </thead>
+    <tbody id="book-list"></tbody>
+</table>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script>
+    $(document).ready(function() {
+        loadBooks();
+    });
+
+    function loadBooks() {
+        $.ajax({
+            url: "/books",
+            type: "GET",
+            dataType: "json",
+            success: function(data) {
+                var books = data.books; // 修正此处为 data.books
+                var bookList = $("#book-list");
+
+                // 清空表格内容
+                bookList.empty();
+
+                // 遍历图书列表并添加表格行
+                books.forEach(function(book) { // 修正此处为 book
+                    var row = $("<tr></tr>");
+                    $("<td>" + book.id + "</td>").appendTo(row); // 修正此处为 book.ID
+                    // $("<td><img src='" + book.Cover + "'></td>").appendTo(row); // 保留书籍封面
+                    $("<td>" + book.title + "</td>").appendTo(row);
+                    // $("<td>" + book.Price + "</td>").appendTo(row);
+                    var actionsCell = $("<td></td>");
+                    var borrowButton = $("<button>Borrow</button>");
+                    var returnButton = $("<button>Return</button>");
+                    borrowButton.on("click", function() {
+                        borrowBook(book.Title);
+                    });
+                    returnButton.on("click", function() {
+                        returnBook(book.Title);
+                    });
+                    borrowButton.appendTo(actionsCell);
+                    returnButton.appendTo(actionsCell);
+                    actionsCell.appendTo(row);
+                    row.appendTo(bookList);
+                });
+            },
+            error: function() {
+                alert("请求失败！");
+            }
+        });
+    }
+
+    function borrowBook(bookTitle) {
+        $.ajax({
+            url: "/books/borrow",
+            type: "POST",
+            data: { title: bookTitle },
+            dataType: "json",
+            success: function(response) {
+                console.log("Borrow book: " + response.title);
+            },
+            error: function() {
+                alert("借书请求失败！");
+            }
+        });
+    }
+
+    function returnBook(bookTitle) {
+        $.ajax({
+            url: "/books/return",
+            type: "POST",
+            data: { title: bookTitle },
+            dataType: "json",
+            success: function(response) {
+                console.log("Return book: " + response.title);
+            },
+            error: function() {
+                alert("还书请求失败！");
+            }
+        });
+    }
+</script>
+</body>
+</html>

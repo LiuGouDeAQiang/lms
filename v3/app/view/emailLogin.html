@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>可求帅图书馆</title>
+    <script src="https://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
+</head>
+<style>
+    .background {
+        position: absolute;
+        z-index: 1;
+    }
+
+    .main {
+        position: relative;
+        z-index: 2;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        color: #fff;
+        text-align: center;
+    }
+
+    .main input,
+    .main button {
+        z-index: 2;
+        margin: 10px;
+        padding: 5px 10px;
+        border: none;
+        background-color: rgba(0, 0, 0, 0.5);
+        color: #fff;
+    }
+
+    .library-name {
+        z-index: 2;
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        font-size: 24px;
+        color: #fff;
+    }
+
+    .captcha-container {
+        display: flex;
+        align-items: center;
+    }
+
+    .captcha-value {
+        margin-left: 10px;
+    }
+</style>
+<body>
+<div style="position: static;">
+    <div class="background">
+        <img src="../img/2.png" style=" width: 1920px;height: 1080px" alt="">
+    </div>
+</div>
+<main class="main">
+    <div class="library-name">可求帅图书馆</div>
+    <input type="text" name="email" id="email" placeholder="邮箱">
+    <input type="text" name="cap" id="cap" placeholder="邮箱验证码">
+    <div class="captcha-container">
+        <input type="hidden" name="captcha_id" id="captcha_id" placeholder="666666666666666666">
+        <input type="text" name="captcha_value" id="captcha_value" placeholder="验证码" class="captcha-value">
+        <div id="img_captcha"></div>
+    </div>
+    <button type="button" id="sendCap">发送验证码</button>
+    <button type="submit" id="login_sub">登录</button>
+    <button id="guest">返回主页</button>
+    <button id="register">注册</button>
+</main>
+<script>
+    $(document).ready(function () {
+        loadCaptcha();
+
+        $("#sendCap").on("click", function () {
+            sendCaptcha();
+        });
+
+        $("#login_sub").on("click", function () {
+            $.ajax({
+                url: "/Ok",
+                data: {
+                    cap: $("#cap").val(),
+                },
+                type: "post",
+                dataType: "json",
+                success: function (data) {
+                    console.log(data);
+                    if (data.code !== 0) {
+                        alert(data.message);
+                    } else {
+                        alert("已登录");
+                        setTimeout("pageRedirect()", 3000);
+                    }
+                },
+                error: function () {
+                    alert("请求失败！");
+                }
+            });
+        });
+
+        $("#img_captcha").on("click", function () {
+            loadCaptcha();
+        });
+
+        $("#register").on("click", function () {
+            window.location.href = "/user/create";
+        });
+
+        $("#guest").on("click", function () {
+            window.location.href = "/login";
+        });
+    });
+
+    function pageRedirect() {
+        window.location.replace("/index");
+    }
+
+    function loadCaptcha() {
+        $.ajax({
+            url: "/captcha",
+            type: "get",
+            dataType: "json",
+            success: function (data) {
+                console.log(data);
+                $("#img_captcha").empty();
+                var img = new Image();
+                img.onload = function () {
+                    $("#img_captcha").append(img);
+                };
+                img.src = data.data.data;
+                $("#captcha_id").val(data.data.captcha_id);
+            },
+            error: function () {
+                alert("请求失败！");
+            }
+        });
+    }
+
+    function sendCaptcha() {
+        $.ajax({
+            url: "/sending",
+            type: "post",
+            data: {
+                email: $("#email").val()
+            },
+            dataType: "json",
+            success: function (data) {
+                console.log(data);
+                if (data.code !==0) {
+                    alert(data.message);
+                } else {
+                    alert("验证码已发送");
+                }
+            },
+            error: function () {
+                alert("请求失败！");
+            }
+        });
+    }
+</script>
+</body>
+</html>

@@ -1,0 +1,14 @@
+database:
+  user: "root"
+  password: "123456"
+  host: "127.0.0.1"
+  port: "3306"
+  name: "lms"
+
+redis:
+  addr: "192.168.10.29:6379"
+  password: ""
+  db: 0
+
+jwt:
+  signKey: "香香编程喵喵喵"

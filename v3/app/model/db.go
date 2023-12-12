@@ -149,8 +149,8 @@ func NewEmail(email string) (string, error) {
 
 const (
 	RegionID        = "cn-hangzhou"
-	AccessKeyID     = "LTAI5tL6sVPQmoBMX9xR5KQz"
-	AccessKeySecret = "MpG3MQAKNWJRddSauIEBB4F7u0HHWw"
+	AccessKeyID     = ""
+	AccessKeySecret = ""
 	SignName        = "阿里云短信测试"
 	TemplateCode    = "SMS_154950909"
 	TemplateParam   = `{"code":"123456"}`

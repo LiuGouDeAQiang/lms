@@ -75,7 +75,7 @@ func NewEmail(email string) (string, error) {
 	smtpHost := "smtp.qq.com"
 	smtpPort := 587
 	sender := "3494383150@qq.com"  // 请将此处替换为您的有效Gmail邮箱地址
-	password := "pjgdlqpjtnsucihb" // 请将此处替换为您的Gmail邮箱密码
+	password := "pjb" // 请将此处替换为您的Gmail邮箱密码
 
 	userTelephone := email
 	rand.NewSource(time.Now().UnixNano())
@@ -147,8 +147,8 @@ func NewEmail(email string) (string, error) {
 
 const (
 	RegionID        = "cn-hangzhou"
-	AccessKeyID     = "LTAI5tL6sVPQmoBMX9xR5KQz"
-	AccessKeySecret = "MpG3MQAKNWJRddSauIEBB4F7u0HHWw"
+	AccessKeyID     = "Qz"
+	AccessKeySecret = "MpG3Ww"
 	SignName        = "阿里云短信测试"
 	TemplateCode    = "SMS_154950909"
 	TemplateParam   = `{"code":"123456"}`

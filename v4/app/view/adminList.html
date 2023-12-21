@@ -1,0 +1,231 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>图书系统管理员</title>
+    <script src="https://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
+</head>
+<style>
+    .background{
+        position: absolute;
+        z-index: 1;
+    }
+    .main {
+        position: relative;
+        z-index: 2;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        color: #fff;
+        text-align: center;
+    }
+
+    .main input,
+    .main button {
+        z-index: 2;
+        margin: 10px;
+        padding: 5px 10px;
+        border: none;
+        background-color: rgba(0, 0, 0, 0.5);
+        color: #fff;
+    }
+    .library-name {
+        z-index: 2;
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        font-size: 24px;
+        color: #fff;
+    }
+    table {
+        margin-top: 20px;
+        border-collapse: collapse;
+        text-align: center;
+    }
+    th, td {
+        padding: 10px;
+        border: 1px solid #fff;
+    }
+    .add-form {
+        display: none;
+    }
+    .add-form input {
+        margin-bottom: 10px;
+    }
+</style>
+<body>
+<div style="position: static;">
+    <div class="background">
+        <img src="../img/1.png" style=" width: 1920px;height: 1080px" alt="">
+    </div>
+</div>
+<main class="main">
+    <div class="library-name">图书系统管理员</div>
+    <table>
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>UID</th>
+            <th>Name</th>
+            <th>Password</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody id="admin-list">
+        <!-- Admin records will be dynamically added here -->
+        </tbody>
+    </table>
+    <button id="add-btn">添加管理员</button>
+    <div class="add-form">
+        <input type="text" id="add-uid" placeholder="Uid">
+        <input type="text" id="add-name" placeholder="Name">
+        <input type="password" id="add-password" placeholder="Password">
+
+        <button id="add-confirm">确认添加</button>
+    </div>
+</main>
+<script>
+    $(document).ready(function(){
+        // Load initial admin list
+        loadAdminList();
+
+        // Show add form on button click
+        $("#add-btn").on("click", function() {
+            $(".add-form").toggle();
+        });
+
+        // Add admin on confirm button click
+        $("#add-confirm").on("click", function() {
+            var uid = $("#add-uid").val();
+            var name = $("#add-name").val();
+            var password = $("#add-password").val();
+
+            addAdmin(name, password, uid);
+        });
+
+        // Delete admin on delete button click
+        $("#admin-list").on("click", ".delete-btn", function() {
+            var adminUid = $(this).data("uid");
+            deleteAdmin(adminUid);
+        });
+
+        // Update admin on update button click
+        $("#admin-list").on("click", ".update-btn", function() {
+            var adminId = $(this).data("id");
+            var newName = prompt("Enter the new name:");
+            var newPassword = prompt("Enter the new password:");
+            var newUid = prompt("Enter the new uid:");
+            updateAdmin(adminId, newName,newPassword,newUid);
+        });
+    });
+
+    // Function to load the list of admins
+    function loadAdminList() {
+        $.ajax({
+            url: "/admin/List",
+            type: "Get",
+            dataType: "json",
+            success: function(data) {
+                var admins = data.admins;
+                var adminList = $("#admin-list");
+                adminList.empty();
+
+                admins.forEach(function(admin) {
+                    var row = "<tr>" +
+                        "<td>" + admin.id + "</td>" +
+                        "<td>" + admin.uid + "</td>" +
+                        "<td>" + admin.name + "</td>" +
+                        "<td>" + admin.password + "</td>" +
+
+                        "<td>" +
+                        "<button class='delete-btn' data-id='" + admin.id + "'>删除</button>" +
+                        "<button class='update-btn' data-id='" + admin.id + "'>修改</button>" +
+                        "</td>" +
+                        "</tr>";
+                    adminList.append(row);
+                });
+            },
+            error: function() {
+                alert("请求失败！");
+            }
+        });
+    }
+    // Function to add a new admin
+    function addAdmin(name, password, uid) {
+        $.ajax({
+            url: "/admin/add",
+            type: "post",
+            dataType: "json",
+            data: {
+                name: name,
+                password: password,
+                uid: uid
+            },
+            success: function(data) {
+                if (data.code === 0) {
+                    alert("管理员添加成功！");
+                    $(".add-form").hide();
+                    loadAdminList();
+                } else {
+                    alert(data.message);
+                }
+            },
+            error: function() {
+                alert("请求失败！");
+            }
+        });
+    }
+
+    // Function to delete an admin
+    function deleteAdmin(adminUid) {
+        $.ajax({
+            url: "/admin/del",
+            type: "post",
+            dataType: "json",
+            data: {
+                uid: adminUid
+            },
+            success: function(data) {
+                if (data.code === 0) {
+                    alert("管理员删除成功！");
+                    loadAdminList();
+                } else {
+                    alert(data.message);
+                }
+            },
+            error: function() {
+                alert("请求失败！");
+            }
+        });
+    }
+
+    // Function to update an admin
+    function updateAdmin(adminId, newName,newPassword,newUid) {
+        $.ajax({
+            url: "/admin/update",
+            type: "post",
+            dataType: "json",
+            data: {
+                id: adminId,
+                name: newName,
+                password:newPassword,
+                uid:newUid
+            },
+            success: function(data) {
+                if (data.code === 0) {
+                    alert("管理员修改成功！");
+                    loadAdminList();
+                } else {
+                    alert(data.message);
+                }
+            },
+            error: function() {
+                alert("请求失败！");
+            }
+        });
+    }
+</script>
+</body>
+</html>

@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>管理员操作平台</title>
+    <script src="https://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
+</head>
+
+<style>
+    .background {
+        position: absolute;
+        z-index: 1;
+    }
+
+    .main {
+        position: relative;
+        z-index: 2;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        color: #fff;
+        text-align: center;
+    }
+
+    .main input,
+    .main button {
+        z-index: 2;
+        margin: 10px;
+        padding: 5px 10px;
+        border: none;
+        background-color: rgba(0, 0, 0, 0.5);
+        color: #fff;
+    }
+
+    .library-name {
+        z-index: 2;
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        font-size: 28px;
+        color: #fff;
+    }
+
+    .links {
+        margin-top: 20px;
+        font-size: 20px;
+    }
+
+    .links a {
+        color: #fff;
+        text-decoration: none;
+        font-size: 40px;
+        margin-bottom: 40px;
+    }
+
+</style>
+
+<body>
+<div style="position: static;">
+    <div class="background">
+        <img src="../img/1.png" style=" width: 1920px;height: 1080px" alt="">
+    </div>
+</div>
+<main class="main">
+    <div class="library-name">管理员操作平台</div>
+    <div class="links">
+        <a href="/admin/index">管理员账号密码管理</a><br>
+        <a></a>
+        <a href="/admin/index2">借书记录详情</a><br>
+        <a></a>=
+        <a href="/index">图书详情页面</a>
+        <a>     </a>
+        <a href="/login">返回登录页面</a>
+    </div>
+</main>
+<script>
+    // // 发送 AJAX 请求检查登录状态
+    // $.ajax({
+    //     url: "/check_login",
+    //     type: "GET",
+    //     success: function (response) {
+    //         // 若未登录，则重定向到登录页面
+    //         if (!response.isLoggedIn) {
+    //             setTimeout(function () {
+    //                 window.location.href = "/login";
+    //             }, 2000); // 2 秒后进行重定向
+    //         }
+    //     },
+    // });
+</script>
+</body>
+
+</html>

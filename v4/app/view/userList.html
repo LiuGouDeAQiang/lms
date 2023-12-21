@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>图书列表</title>
+    <style>
+        body {
+            background-image: url("../img/1.png");
+            background-size: cover;
+            background-repeat: no-repeat;
+        }
+
+        h1, th, td, a, button {
+            color: #fff; /* 将元素的颜色设置为白色 */
+        }
+    </style>
+</head>
+<body>
+<h1>图书列表</h1>
+<a href="/login">登录</a>
+<a href="/logout">退出登录</a>
+<table>
+    <thead>
+    <tr>
+        <th>ID</th>
+        <!--        <th>Cover</th>-->
+        <th>Title</th>
+        <!--        <th>Price</th>-->
+        <th>Actions</th>
+    </tr>
+    </thead>
+    <tbody id="book-list"></tbody>
+</table>
+<button id="prev-btn">上一页</button>
+<span id="page-number"></span>
+<button id="next-btn">下一页</button>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script>
+    var currentPage = 1; // 当前页数，默认为第一页
+    $(document).ready(function() {
+        loadBooks();
+        updatePageNumber();
+
+        $("#prev-btn").on("click", function() {
+            if (currentPage > 1) {
+                currentPage--;
+                loadBooks();
+                updatePageNumber();
+            }
+        });
+
+        $("#next-btn").on("click", function() {
+            currentPage++;
+            loadBooks();
+            updatePageNumber();
+        });
+    });
+
+    function loadBooks() {
+        $.ajax({
+            url: "/books",
+            type: "GET",
+            data: { offset: (currentPage - 1) * 5 }, // 根据当前页数计算 offse
+            dataType: "json",
+            success: function(data) {
+                var books = data.books; // 修正此处为 data.books
+                var bookList = $("#book-list");
+
+                // 清空表格内容
+                bookList.empty();
+
+                // 遍历图书列表并添加表格行
+                books.forEach(function(book) { // 修正此处为 book
+                    var row = $("<tr></tr>");
+                    $("<td>" + book.id + "</td>").appendTo(row); // 修正此处为 book.ID
+                    // $("<td><img src='" + book.Cover + "'></td>").appendTo(row); // 保留书籍封面
+                    $("<td>" + book.title + "</td>").appendTo(row);
+                    // $("<td>" + book.Price + "</td>").appendTo(row);
+                    var actionsCell = $("<td></td>");
+                    var borrowButton = $("<button>Borrow</button>").css({
+                        "background-color": "white",
+                        "color": "black"
+                    });
+                    var returnButton = $("<button>Return</button>").css({
+                        "background-color": "white",
+                        "color": "black"
+                    });
+                    borrowButton.on("click", function() {
+                        borrowBook(book.title);
+                    });
+                    returnButton.on("click", function() {
+                        returnBook(book.title);
+                    });
+                    borrowButton.appendTo(actionsCell);
+                    returnButton.appendTo(actionsCell);
+                    actionsCell.appendTo(row);
+                    row.appendTo(bookList);
+                });
+            },
+            error: function() {
+                alert("请求失败！");
+            }
+        });
+    }
+
+    function borrowBook(bookTitle) {
+        $.ajax({
+            url: "/books/borrow",
+            type: "POST",
+            data: { title: bookTitle },
+            dataType: "json",
+            success: function(response) {
+                console.log("Borrow book: " + response.title);
+            },
+            error: function() {
+                alert("借书请求失败！");
+            }
+        });
+    }
+
+    function returnBook(bookTitle) {
+        $.ajax({
+            url: "/books/return",
+            type: "POST",
+            data: { title: bookTitle },
+            dataType: "json",
+            success: function(response) {
+                console.log("Return book: " + response.title);
+            },
+            error: function() {
+                alert("还书请求失败！");
+            }
+        });
+    }
+    function updatePageNumber() {
+        $("#page-number").text("第 " + currentPage + " 页"); // 更新页数显示
+    }
+</script>
+</body>
+</html>
